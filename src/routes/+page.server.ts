@@ -1,7 +1,16 @@
 import { error } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { decode } from 'decode-formdata';
-import { date, number, object, optional, safeParse, string } from 'valibot';
+import {
+    date,
+    instance,
+    nullable,
+    number,
+    object,
+    optional,
+    safeParse,
+    string
+} from 'valibot';
 
 export const actions = {
     default: async (event) => {
@@ -9,11 +18,12 @@ export const actions = {
         console.log(data);
         const schema = object({
             text: optional(string()),
-            number: optional(number()),
-            date: optional(date())
+            number: nullable(number()),
+            date: nullable(date()),
+            file: optional(instance(File))
         });
         const result = safeParse(schema, decode(data,
-            { numbers: ['number'], dates: ['date'] }
+            { numbers: ['number'], dates: ['date'], files: ['file'] }
         ));
         if (!result.success) {
             const firstIssue = result.issues[0];
