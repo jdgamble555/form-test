@@ -4,10 +4,8 @@ import { decode } from 'decode-formdata';
 import {
     date,
     instance,
-    nullable,
     number,
     object,
-    optional,
     safeParse,
     string
 } from 'valibot';
@@ -17,14 +15,14 @@ export const actions = {
         const data = await event.request.formData();
         console.log(data);
         const schema = object({
-            text: optional(string()),
-            number: nullable(number()),
-            date: nullable(date()),
-            file: optional(instance(File))
+            text: string(),
+            number: number(),
+            date: date(),
+            file: instance(File)
         });
         const result = safeParse(schema, decode(data,
             { numbers: ['number'], dates: ['date'], files: ['file'] }
-        ));
+        ), { abortEarly: true });
         if (!result.success) {
             const firstIssue = result.issues[0];
             if (!firstIssue.path) {
